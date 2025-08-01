@@ -7,6 +7,7 @@ const ExerciseModel = require("./models/exerciseModel");
 const UserModel = require("./models/userModel");
 
 app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 
 mongoose.connect(process.env.MONGO_URI);
 
@@ -19,13 +20,13 @@ app.get("/", (req, res) => {
 // Create new user
 app.post("/api/users", async (req, res) => {
   const data = req.body;
+  console.log(data)
 
   if (!data.username) return res.json({ error: "Invalid data" });
 
   const existing = await UserModel.findOne({ username: data.username });
   if (existing) {
     console.log("Notice -> User " + existing.username + " exists");
-    console.log(existing.date);
 
     return res.json({
       _id: existing._id,
