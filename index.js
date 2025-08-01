@@ -27,7 +27,7 @@ app.post("/api/users", async (req, res) => {
     console.log("Notice -> User " + existing.username + " exists");
     console.log(existing.date);
 
-    return res.send({
+    return res.json({
       _id: existing._id,
       username: existing.username,
     });
@@ -36,8 +36,8 @@ app.post("/api/users", async (req, res) => {
   const newUser = await UserModel.create({ username: data.username });
 
   res.json({
-    _id: newUser._id,
     username: newUser.username,
+    _id: newUser._id
   });
 });
 
