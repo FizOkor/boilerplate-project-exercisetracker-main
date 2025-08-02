@@ -60,7 +60,12 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
       duration: parseInt(data.duration),
     });
 
-    res.json(newExercise);
+    res.json(newExercise.map( entry => {
+      return {
+        ...entry.doc,
+        date: entry.date.toDateString()
+      }
+    }));
   } catch (err) {
     res.status(500).json({ error: "Server error" });
   }
