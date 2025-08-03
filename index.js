@@ -69,7 +69,7 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
       username,
       description: newExercise.description,
       duration: newExercise.duration,
-      date: newExercise.date.toDateString(),
+      date: newExercise.date.toString().toDateString(),
     });
   } catch (err) {
     res.status(500).json({ error: "Server error" });
@@ -100,7 +100,7 @@ app.get("/api/users/:_id/logs", async (req, res) => {
         return {
           descrition: entry.description,
           duration: Number(entry.duration),
-          date: entry.date.toDateString(),
+          date: entry.date.toString().toDateString(),
         };
       }),
     };
