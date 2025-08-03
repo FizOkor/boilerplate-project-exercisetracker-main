@@ -20,7 +20,7 @@ app.get("/", (req, res) => {
 // Create new user
 app.post("/api/users", async (req, res) => {
   const data = req.body;
-  console.log(data)
+  console.log(data);
 
   if (!data.username) return res.json({ error: "Invalid data" });
 
@@ -38,7 +38,7 @@ app.post("/api/users", async (req, res) => {
 
   res.json({
     username: newUser.username,
-    _id: newUser._id
+    _id: newUser._id,
   });
 });
 
@@ -54,18 +54,23 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
   const data = req.body;
 
   try {
+    const { username } = (await UserModel.findById(req.params._id)) || {};
+    if (!username) return res.status(400).json({ error: "User not found" });
+
     const newExercise = await ExerciseModel.create({
       userId: req.params._id,
       description: data.description,
       duration: parseInt(data.duration),
     });
 
-    res.json(newExercise.map( entry => {
-      return {
-        ...entry.doc,
-        date: entry.date.toDateString()
-      }
-    }));
+    console.log("newRxercise:", newExercise);
+    res.json({
+      _id: newExercise.userId,
+      username,
+      description: newExercise.description,
+      duration: newExercise.duration,
+      date: newExercise.date.toDateString(),
+    });
   } catch (err) {
     res.status(500).json({ error: "Server error" });
   }
@@ -73,24 +78,34 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
 
 app.get("/api/users/:_id/logs", async (req, res) => {
   const userId = req.params._id;
+  const { username } = (await UserModel.findById(req.params._id)) || {};
+  if (!username) return res.status(400).json({ error: "User not found" });
+
   if (req.query) {
     const from = new Date(req.query.from);
     const to = new Date(req.query.to);
     const limit = req.query.limit;
 
-    const response = await ExerciseModel.find({
+    const logs = await ExerciseModel.find({
       date: { $gte: from, $lte: to },
     }).limit(limit);
 
-    const formattedResponse = response.map((entry) => {
-      return {
-        ...entry._doc,
-        duration: Number(entry.duration),
-        date: entry.date.toDateString(),
-      };
-    });
+    const count = response.length;
 
-    return res.json(formattedResponse);
+    const response = {
+      username,
+      count,
+      _id,
+      log: logs.map((entry) => {
+        return {
+          descrition: entry.description,
+          duration: Number(entry.duration),
+          date: entry.date.toDateString(),
+        };
+      }),
+    };
+
+    return res.json(response);
   }
 
   const allExercises = await ExerciseModel.find({ userId });
