@@ -63,13 +63,13 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
       duration: parseInt(data.duration),
     });
 
-    console.log("newRxercise:", newExercise);
+    console.log("grrRxercise:", newExercise);
     res.json({
       _id: newExercise.userId,
       username,
       description: newExercise.description,
       duration: newExercise.duration,
-      date: newExercise.date.toString().toDateString(),
+      date: new Date(newExercise.date).toDateString(),
     });
   } catch (err) {
     res.status(500).json({ error: "Server error" });
