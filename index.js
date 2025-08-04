@@ -57,11 +57,18 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
     const { username } = (await UserModel.findById(req.params._id)) || {};
     if (!username) return res.status(400).json({ error: "User not found" });
 
-    const newExercise = await ExerciseModel.create({
+    const exerciseData = {
       userId: req.params._id,
       description: data.description,
       duration: parseInt(data.duration),
-    });
+    };
+    
+    if (data.date && data.date.trim() !== "") {
+      exerciseData.date = new Date(data.date);
+    }
+
+    // Now create the document
+    const newExercise = await ExerciseModel.create(exerciseData);
 
     console.log("grrRxercise:", newExercise);
     res.json({
@@ -100,7 +107,7 @@ app.get("/api/users/:_id/logs", async (req, res) => {
         return {
           descrition: entry.description,
           duration: Number(entry.duration),
-          date: entry.date.toString().toDateString()
+          date: entry.date.toString().toDateString(),
         };
       }),
     };
