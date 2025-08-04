@@ -70,7 +70,7 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
     // Now create the document
     const newExercise = await ExerciseModel.create(exerciseData);
 
-    console.log("grrRxercise:", newExercise);
+    console.log("testingggRxercise:", newExercise);
     res.json({
       _id: newExercise.userId,
       username,
